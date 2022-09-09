@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.contentprovidertest">
-    <permission android:name="dandroid.permission.messagingproviderwriteperm" android:protectionLevel="normal" />
+    <permission android:name="android.permission.messagingproviderwriteperm" android:protectionLevel="normal" />
     <permission android:name="android.permission.messagingproviderreadperm" android:protectionLevel="normal" />
     <application
         android:allowBackup="true"
