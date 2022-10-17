@@ -57,5 +57,16 @@
         android:layout_height="wrap_content"
         android:text="Delete Message"
         android:layout_below="@id/btn_update_status"></Button>
-
+    <Button
+        android:id="@+id/btn_start_service"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="start service"
+        android:layout_below="@id/btn_delete"></Button>
+    <Button
+        android:id="@+id/btn_stop_service"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="stop service"
+        android:layout_below="@id/btn_start_service"></Button>
 </RelativeLayout>

@@ -9,7 +9,9 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,11 +20,19 @@ import android.widget.Toast;
 import com.example.contentprovidertest.providers.MessageProvider;
 import com.example.contentprovidertest.sqlite.DBHelper;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+
 public class MainActivity extends AppCompatActivity {
     EditText receiver, messageText, appName;
-    Button insert, delete, view, update;
+    Button insert, delete, view, update, sendToSocket;
     DBHelper DB;
     public static int dbMode=1;
+    private static String serverIP = "127.0.0.1";
+    private static int port = 4444;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         view=findViewById(R.id.btn_view_messages);
         update=findViewById(R.id.btn_update_status);
         delete=findViewById(R.id.btn_delete);
-
+        sendToSocket=findViewById(R.id.btn_add_to_socket);
         DB=new DBHelper(this);
         insert.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -138,5 +148,37 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        sendToSocket.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new Thread1().execute("");
+            }
+        });
+    }
+
+    class Thread1  extends AsyncTask<String, Void, String> {
+        public String doInBackground(String... data) {
+            Socket socket;
+            try {
+                socket = new Socket(serverIP, port);
+                PrintWriter output = new PrintWriter(socket.getOutputStream());
+                BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+                //Toast.makeText(MainActivity.this, "sending message to socket", Toast.LENGTH_SHORT);
+                Log.d("deepakSocket", "sending message to socket");
+                output.write("Sending message from contentProviderTest");
+                output.flush();
+                //new Thread(new Thread2()).start();
+                output.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e("deepakSocket", e.getMessage());
+                //Toast.makeText(MainActivity.this, "error sending message: "+e.getMessage(), Toast.LENGTH_SHORT);
+            }
+            Log.d("deepakSocket", "success sending message to socket");
+            //Toast.makeText(MainActivity.this, "success sending message to socket", Toast.LENGTH_SHORT);
+            return "Success";
+        }
     }
 }

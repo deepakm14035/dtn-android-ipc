@@ -39,7 +39,7 @@ public class MessageProvider extends ContentProvider {
     static final String DATABASE_NAME="messages";
     static final String TABLE_NAME="messageTable";
     static final int DATABASE_VERSION=1;
-    static final String CREATE_DB_TABLE="CREATE TABLE "+TABLE_NAME+" (messageID INT, receiver TEXT, message TEXT, appName TEXT, status TEXT)";
+    static final String CREATE_DB_TABLE="CREATE TABLE "+TABLE_NAME+" (messageID INT, receiver TEXT, messageBody TEXT, messageHeader TEXT, appName TEXT, status TEXT)";
 
     @Override
     public boolean onCreate() {

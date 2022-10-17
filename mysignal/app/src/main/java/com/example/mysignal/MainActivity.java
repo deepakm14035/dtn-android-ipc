@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,7 +18,7 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
     static final Uri CONTENT_URL=Uri.parse("content://com.example.contentprovidertest.providers/messages");
     EditText receiver, messageText, appName;
-    Button insert, delete, view, update;
+    Button insert, delete, view, update, startServiceBtn;
 
     TextView messageListLabel;
     ContentResolver resolver;
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
         view=findViewById(R.id.btn_view_messages);
         update=findViewById(R.id.btn_update_status);
         delete=findViewById(R.id.btn_delete);
+        startServiceBtn=findViewById(R.id.btn_start_service);
         //grantUriPermission();
         getMessages();
         insert.setOnClickListener(new View.OnClickListener() {
@@ -47,6 +49,28 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 getMessages();
+            }
+        });
+        startServiceBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startService(new Intent(getApplicationContext(), SocketService.class));
+            }
+        });
+
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                /*String receiverTXT=receiver.getText().toString();
+                String messageTXT=messageText.getText().toString();
+                String appNameTXT=appName.getText().toString();
+                Boolean checkDeleteStatus=resolver.delete(receiverTXT, messageTXT, appNameTXT);
+                if(checkDeleteStatus){
+                    Toast.makeText(MainActivity.this, "message deleted", Toast.LENGTH_SHORT);
+                }
+                else{
+                    Toast.makeText(MainActivity.this, "error deleting message", Toast.LENGTH_SHORT);
+                }*/
             }
         });
     }
