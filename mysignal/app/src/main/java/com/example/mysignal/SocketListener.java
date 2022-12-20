@@ -5,19 +5,21 @@ import android.content.ContentValues;
 import android.net.Uri;
 import android.util.Log;
 
+import org.whispersystems.signalservice.internal.websocket.WebSocketProtos;
+
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Reader;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SocketListener extends Thread{
     static final Uri CONTENT_URL=Uri.parse("content://com.example.contentprovidertest.providers/messages");
@@ -55,6 +57,12 @@ public class SocketListener extends Thread{
         running = false;
     }
 
+    public byte[] listToArr(List<Byte> list){
+        byte[] arr=new byte[list.size()];
+        for(int i=0;i<list.size();i++) arr[i]=list.get(i);
+        return arr;
+    }
+
     public String getHeaderToArray(InputStream inputStream) {
 
         String headerTempData = "";
@@ -77,9 +85,10 @@ public class SocketListener extends Thread{
         return headerTempData;
     }
 
-    public String getBody(InputStream inputStream) {
+    public byte[] getBody(InputStream inputStream) {
 
         String bodyTempData = "";
+        List<Byte> bodyDataArr = new ArrayList<>();
 
         // chain the InputStream to a Reader
         Reader reader = new InputStreamReader(inputStream);
@@ -88,12 +97,13 @@ public class SocketListener extends Thread{
             while ((c = reader.read()) != -1) {
                 //System.out.print((char) c);
                 bodyTempData += (char) c;
+                bodyDataArr.add((byte)c);
             }
         } catch (IOException ex) {
             System.err.println(ex.getMessage());
         }
 
-        return bodyTempData;
+        return listToArr(bodyDataArr);
     }
 
     public void saveToDB(InputStream inStream, DataOutputStream outStream, Socket socket){
@@ -101,17 +111,22 @@ public class SocketListener extends Thread{
             try {
 
 
-                String headerData = getHeaderToArray(inStream);
-                String bodyData = getBody(inStream);
+                //String headerData = getHeaderToArray(inStream);
+                byte[] bodyData = getBody(inStream);
                 //System.out.println("headers: "+headerData);
+                WebSocketProtos.WebSocketRequestMessage messageObj = WebSocketProtos.WebSocketRequestMessage.parseFrom(bodyData);
+                Log.d("deepakSocket","message path: " + messageObj.getPath());
 
                 outStream.write(OUTPUT_HEADERS.getBytes("UTF-8"), 0, OUTPUT_HEADERS.length());
                 //out.flush();
                 //sendFile(absolutePath+"index.html", out);
-                Log.d("deepakSocket","message header: "+headerData);
+                //Log.d("deepakSocket","message header: "+headerData);
+                for(int i=0;i<messageObj.getHeadersList().size();i++){
+                    Log.d("deepakSocket","message header"+i+": "+messageObj.getHeaders(i));
+                }
                 Log.d("deepakSocket","message: "+bodyData);
                 String receiverName="kapeed";
-                String message=headerData + bodyData;
+                String message=bodyData.toString();
                 String appNameText="mysignal";
 
                 ContentValues values=new ContentValues();
@@ -125,9 +140,11 @@ public class SocketListener extends Thread{
                 if(outStream!=null) outStream.close();
             } catch (MalformedURLException ex) {
                 System.err.println(socket.getLocalAddress() + " is not a parseable URL");
+                ex.printStackTrace();
                 Log.e("deepakSocket", ex.getMessage());
             } catch (IOException ex) {
                 System.err.println(ex.getMessage());
+                ex.printStackTrace();
                 Log.e("deepakSocket", ex.getMessage());
             }
 

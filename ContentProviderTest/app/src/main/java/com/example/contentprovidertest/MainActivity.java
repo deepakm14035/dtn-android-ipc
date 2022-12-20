@@ -164,19 +164,19 @@ public class MainActivity extends AppCompatActivity {
                 socket = new Socket(serverIP, port);
                 PrintWriter output = new PrintWriter(socket.getOutputStream());
                 BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
+                String messageTXT = messageText.getText().toString();
                 //Toast.makeText(MainActivity.this, "sending message to socket", Toast.LENGTH_SHORT);
                 Log.d("deepakSocket", "sending message to socket");
-                output.write("Sending message from contentProviderTest");
+                output.write("<header>\r\n\r\n"+messageTXT);
                 output.flush();
                 //new Thread(new Thread2()).start();
                 output.close();
+                Log.d("deepakSocket", "success sending message to socket");
             } catch (IOException e) {
                 e.printStackTrace();
                 Log.e("deepakSocket", e.getMessage());
                 //Toast.makeText(MainActivity.this, "error sending message: "+e.getMessage(), Toast.LENGTH_SHORT);
             }
-            Log.d("deepakSocket", "success sending message to socket");
             //Toast.makeText(MainActivity.this, "success sending message to socket", Toast.LENGTH_SHORT);
             return "Success";
         }
