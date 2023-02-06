@@ -5,16 +5,21 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.contentprovidertest.filestore.FileStoreHelper;
 import com.example.contentprovidertest.sqlite.DBHelper;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class MessageProvider extends ContentProvider {
     public static final String PROVIDER_NAME="com.example.contentprovidertest.providers";
@@ -29,6 +34,8 @@ public class MessageProvider extends ContentProvider {
 
     private static HashMap<String, String> values;
     static final UriMatcher uriMatcher;
+    private FileStoreHelper sendFileStoreHelper;
+    private FileStoreHelper receiveFileStoreHelper;
 
     static{
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -45,6 +52,8 @@ public class MessageProvider extends ContentProvider {
     public boolean onCreate() {
         DBHelper dbHelper=new DBHelper(getContext());
         sqlDB=dbHelper.getWritableDatabase();
+        sendFileStoreHelper = new FileStoreHelper(getContext().getApplicationInfo().dataDir+"/send");
+        receiveFileStoreHelper = new FileStoreHelper(getContext().getApplicationInfo().dataDir+"/receive");
         if(sqlDB!=null) return true;
         return false;
     }
@@ -52,7 +61,25 @@ public class MessageProvider extends ContentProvider {
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
-        SQLiteQueryBuilder queryBuilder=new SQLiteQueryBuilder();
+        MatrixCursor cursor = null;
+        try {
+            Log.d("deepak", "selection-" + selection);
+            Log.d("deepak", "selectionArgs-" + selectionArgs[0]);
+            //selection = app name
+            //selectionsArgs[0] = app name value
+            byte[] res = sendFileStoreHelper.getNextAppData(selectionArgs[0]);
+            cursor = new MatrixCursor(new String[]{"data"});
+            List<byte[]> arr = new ArrayList<>();
+            if (res == null) {
+                return cursor;
+            }
+            arr.add(res);
+            cursor.addRow(arr);
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+        return cursor;
+        /*SQLiteQueryBuilder queryBuilder=new SQLiteQueryBuilder();
         queryBuilder.setTables(TABLE_NAME);
         switch ((uriMatcher.match(uri))){
             case uriCode:
@@ -63,7 +90,7 @@ public class MessageProvider extends ContentProvider {
         }
         Cursor cursor=queryBuilder.query(sqlDB, projection, selection, selectionArgs, null, null, sortOrder);
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
-        return cursor;
+        return cursor;*/
     }
 
     @Nullable
@@ -80,11 +107,15 @@ public class MessageProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
-        long rowID = sqlDB.insert(TABLE_NAME, null, contentValues);
+        String appName = (String) contentValues.get("appName");
+        byte[] data = (byte[]) contentValues.get("data");
+        sendFileStoreHelper.AddFile(appName, data);
+
+        /*long rowID = sqlDB.insert(TABLE_NAME, null, contentValues);
         if(rowID>0){
             Uri _uri= ContentUris.withAppendedId(CONTENT_URI, rowID);
             getContext().getContentResolver().notifyChange(_uri, null);
-        }
+        }*/
         return null;
     }
 

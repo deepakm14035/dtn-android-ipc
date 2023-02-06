@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         delete=findViewById(R.id.btn_delete);
         startServiceBtn=findViewById(R.id.btn_start_service);
         //grantUriPermission();
-        getMessages();
+        //getMessages();
         insert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -76,16 +76,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void getMessages(){
-        String[] projection=new String[]{"receiver", "message", "appName"};
+        String[] projection=new String[]{"message", "appName"};
+        String selection="appName";
+        String[] selectionArgs=new String[]{getApplicationContext().getPackageName()};
         String messageList = "";
         //try {
-            Cursor cursor = resolver.query(CONTENT_URL, projection, null, null, null);
+            Cursor cursor = resolver.query(CONTENT_URL, projection, selection, selectionArgs, null);
             if (cursor.moveToFirst()) {
                 do {
-                    String receiver = cursor.getString(0);
-                    String message = cursor.getString(1);
-                    String appName = cursor.getString(2);
-                    messageList += receiver + ", " + message + ", " + appName + "\n";
+                    byte[] message = cursor.getBlob(0);
+                    messageList += new String(message) + "\n";
                 } while (cursor.moveToNext());
 
             } else {
@@ -107,9 +107,8 @@ public class MainActivity extends AppCompatActivity {
         String appNameText=appName.getText().toString();
 
         ContentValues values=new ContentValues();
-        values.put("receiver", receiverName);
-        values.put("message", message);
-        values.put("appName", appNameText);
+        values.put("data", message.getBytes());
+        values.put("appName", getApplicationContext().getPackageName());
 
         resolver.insert(CONTENT_URL, values);
 

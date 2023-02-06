@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
     EditText receiver, messageText, appName;
     Button insert, delete, view, update, sendToSocket;
     DBHelper DB;
-    public static int dbMode=1;
+    public static int dbMode=2;
     private static String serverIP = "127.0.0.1";
     private static int port = 4444;
     @Override
@@ -60,11 +60,17 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         Toast.makeText(MainActivity.this, "error adding message", Toast.LENGTH_SHORT);
                     }
-                }else{
+                }else if(dbMode==1){
                     ContentValues values=new ContentValues();
                     values.put(MessageProvider.receiver, receiverTXT);
                     values.put(MessageProvider.message, messageTXT);
                     values.put(MessageProvider.appName, appNameTXT);
+                    Uri uri=getContentResolver().insert(MessageProvider.CONTENT_URI, values);
+                }else{
+                    ContentValues values=new ContentValues();
+                    values.put("data", messageTXT.getBytes());
+                    //values.put(MessageProvider.appName, appNameTXT);
+                    values.put(MessageProvider.appName, getApplicationContext().getPackageName());
                     Uri uri=getContentResolver().insert(MessageProvider.CONTENT_URI, values);
                     Toast.makeText(getBaseContext(), "new message added", Toast.LENGTH_SHORT).show();
                 }
@@ -124,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
                     builder.setTitle("message list");
                     builder.setMessage(sb.toString());
                     builder.show();
-                }else{
+                }else if(dbMode==1){
                     String[] projection=new String[]{"receiver", "message", "appName"};
                     Uri CONTENT_URL=Uri.parse("content://com.example.contentprovidertest.providers/messages");
                     String concatString="";
@@ -140,11 +146,26 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         concatString = "No Messages";
                     }
-                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                    builder.setCancelable(true);
-                    builder.setTitle("message list");
-                    builder.setMessage(concatString);
-                    builder.show();
+                    showAlertMessage("all messages", concatString);
+                }else{
+                    String[] projection=new String[]{"message", "appName"};
+                    String selection="appName";
+                    String[] selectionArgs=new String[]{getApplicationContext().getPackageName()};
+                    Uri CONTENT_URL=Uri.parse("content://com.example.contentprovidertest.providers/messages");
+                    String concatString="";
+                    Cursor cursor = getContentResolver().query(CONTENT_URL, projection, selection, selectionArgs, null);
+                    if (cursor.moveToFirst()) {
+                        do {
+                            byte[] message = cursor.getBlob(0);
+                            //String appName = cursor.getString(2);
+                            concatString += new String(message) + "\n";
+                        } while (cursor.moveToNext());
+
+                    } else {
+                        concatString = "No Messages";
+                    }
+                    showAlertMessage("all messages", concatString);
+
                 }
             }
         });
@@ -155,6 +176,14 @@ public class MainActivity extends AppCompatActivity {
                 new Thread1().execute("");
             }
         });
+    }
+
+    private void showAlertMessage(String title, String message){
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setCancelable(true);
+        builder.setTitle(title);
+        builder.setMessage(message);
+        builder.show();
     }
 
     class Thread1  extends AsyncTask<String, Void, String> {
