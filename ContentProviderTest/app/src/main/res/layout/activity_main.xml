@@ -32,6 +32,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="app name"
+        android:text="com.example.mysignal"
         android:layout_below="@+id/message"></EditText>
     <Button
         android:id="@+id/btn_insert"

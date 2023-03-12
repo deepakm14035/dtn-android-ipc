@@ -3,12 +3,14 @@ package com.example.contentprovidertest.providers;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.os.Binder;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -108,8 +110,21 @@ public class MessageProvider extends ContentProvider {
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
         String appName = (String) contentValues.get("appName");
+        int receiverId = Binder.getCallingUid();
+        appName = getContext().getPackageManager().getNameForUid(receiverId);
+        String destination = (String) contentValues.get("destination");
+        destination = "APP";
         byte[] data = (byte[]) contentValues.get("data");
         sendFileStoreHelper.AddFile(appName, data);
+
+        //notify app that someone sent data for the app
+        if(destination.equals("APP")) {
+            Intent intent = new Intent("android.intent.dtn.SEND_DATA");
+            intent.setPackage(appName);
+            intent.setType("text/plain");
+            intent.putExtra(Intent.EXTRA_TEXT, data);
+            getContext().startService(intent);
+        }
 
         /*long rowID = sqlDB.insert(TABLE_NAME, null, contentValues);
         if(rowID>0){

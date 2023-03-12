@@ -102,9 +102,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
     public void addMessage(){
-        String receiverName=receiver.getText().toString();
         String message=messageText.getText().toString();
-        String appNameText=appName.getText().toString();
 
         ContentValues values=new ContentValues();
         values.put("data", message.getBytes());

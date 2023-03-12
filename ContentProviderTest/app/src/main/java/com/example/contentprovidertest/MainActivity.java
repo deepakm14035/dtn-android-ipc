@@ -69,8 +69,9 @@ public class MainActivity extends AppCompatActivity {
                 }else{
                     ContentValues values=new ContentValues();
                     values.put("data", messageTXT.getBytes());
-                    //values.put(MessageProvider.appName, appNameTXT);
-                    values.put(MessageProvider.appName, getApplicationContext().getPackageName());
+                    values.put(MessageProvider.appName, appNameTXT);
+                    values.put("destination", "APP");
+                    //values.put(MessageProvider.appName, getApplicationContext().getPackageName());
                     Uri uri=getContentResolver().insert(MessageProvider.CONTENT_URI, values);
                     Toast.makeText(getBaseContext(), "new message added", Toast.LENGTH_SHORT).show();
                 }
