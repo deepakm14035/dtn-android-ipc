@@ -13,7 +13,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <queries>
-        <provider android:authorities="com.example.contentprovidertest.providers"></provider>
+        <provider android:authorities="com.ddd.datastore.providers"></provider>
     </queries>
 
     <application

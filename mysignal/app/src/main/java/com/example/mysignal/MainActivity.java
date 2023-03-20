@@ -16,7 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
-    static final Uri CONTENT_URL=Uri.parse("content://com.example.contentprovidertest.providers/messages");
+    static final Uri CONTENT_URL=Uri.parse("content://com.ddd.datastore.providers/messages");
     EditText receiver, messageText, appName;
     Button insert, delete, view, update, startServiceBtn;
 
