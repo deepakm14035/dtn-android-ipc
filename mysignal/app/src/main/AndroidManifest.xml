@@ -25,7 +25,7 @@
         android:theme="@style/Theme.MySignal">
         <service
             android:name=".ReceiveIntentService"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.dtn.SEND_DATA" />
                 <category android:name="android.intent.category.DEFAULT" />
