@@ -15,6 +15,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
     static final Uri CONTENT_URL=Uri.parse("content://com.ddd.datastore.providers/messages");
     EditText receiver, messageText, appName;
@@ -76,24 +78,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void getMessages(){
-        String[] projection=new String[]{"message", "appName"};
-        String selection="appName";
-        String[] selectionArgs=new String[]{getApplicationContext().getPackageName()};
-        String messageList = "";
-        //try {
-            Cursor cursor = resolver.query(CONTENT_URL, projection, selection, selectionArgs, null);
-            if (cursor.moveToFirst()) {
-                do {
-                    byte[] message = cursor.getBlob(0);
-                    messageList += new String(message) + "\n";
-                } while (cursor.moveToNext());
-
-            } else {
-                messageList = "No Messages";
-            }
-        /*}catch (Exception e){
-            Toast.makeText(getBaseContext(), e.getStackTrace().toString(), Toast.LENGTH_SHORT).show();
-        }*/
+        FileStoreHelper fileStoreHelper = new FileStoreHelper(getApplicationContext().getApplicationInfo().dataDir+"/ReceivedData");
+        String messageList="";
+        List<byte[]> arr = fileStoreHelper.getAppData();
+        for(int i=0;i<arr.size();i++){
+            messageList=messageList+arr.get(i);
+        }
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setCancelable(true);
         builder.setTitle("message list");

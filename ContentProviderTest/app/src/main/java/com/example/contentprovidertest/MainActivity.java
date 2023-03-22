@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.contentprovidertest.filestore.FileStoreHelper;
 import com.example.contentprovidertest.providers.MessageProvider;
 import com.example.contentprovidertest.sqlite.DBHelper;
 
@@ -27,7 +28,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 public class MainActivity extends AppCompatActivity {
-    EditText receiver, messageText, appName;
+    EditText receiver, messageText, appName, aduId;
     Button insert, delete, view, update, sendToSocket;
     DBHelper DB;
     public static int dbMode=2;
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
         receiver=findViewById(R.id.receiver);
         messageText=findViewById(R.id.message);
         appName=findViewById(R.id.app_name);
+        aduId=findViewById(R.id.adu_id);
 
         insert=findViewById(R.id.btn_insert);
         view=findViewById(R.id.btn_view_messages);
@@ -84,12 +86,18 @@ public class MainActivity extends AppCompatActivity {
                 String receiverTXT=receiver.getText().toString();
                 String messageTXT=messageText.getText().toString();
                 String appNameTXT=appName.getText().toString();
-                Boolean checkUpdateStatus=DB.updateMessageData(receiverTXT, messageTXT, appNameTXT);
-                if(checkUpdateStatus){
-                    Toast.makeText(MainActivity.this, "message updated", Toast.LENGTH_SHORT);
-                }
-                else{
-                    Toast.makeText(MainActivity.this, "error updating message", Toast.LENGTH_SHORT);
+                String aduIdval = aduId.getText().toString();
+                if(dbMode==0) {
+                    Boolean checkUpdateStatus = DB.updateMessageData(receiverTXT, messageTXT, appNameTXT);
+                    if (checkUpdateStatus) {
+                        Toast.makeText(MainActivity.this, "message updated", Toast.LENGTH_SHORT);
+                    } else {
+                        Toast.makeText(MainActivity.this, "error updating message", Toast.LENGTH_SHORT);
+                    }
+                }else{
+                    FileStoreHelper fileStoreHelper = new FileStoreHelper(getApplicationContext().getApplicationInfo().dataDir+"/send");
+                    Log.d("deepak", "removing adu ids upto - "+aduIdval);
+                    fileStoreHelper.deleteAllFilesUpTo(appNameTXT,Long.parseLong(aduIdval));
                 }
             }
         });

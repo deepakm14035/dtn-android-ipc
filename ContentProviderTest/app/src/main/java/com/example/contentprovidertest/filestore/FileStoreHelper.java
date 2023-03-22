@@ -14,6 +14,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class FileStoreHelper {
     String RootFolder="";
 
@@ -66,6 +67,18 @@ public class FileStoreHelper {
         }
     }
 
+    public byte[] getDataFromFile(File file){
+        try {
+            FileInputStream fis = new FileInputStream(file);
+            byte[] res = new byte[fis.available()];
+            fis.read(res);
+            return res;
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
     private byte[] readFile(String file){
         try {
             File f = new File(file);
@@ -79,15 +92,24 @@ public class FileStoreHelper {
         return null;
     }
 
-    public List<byte[]> getAppData(String folder){
+    public List<byte[]> getAppData(String appId){
         List<byte[]> appDataList = new ArrayList<>();
+        String folder = RootFolder+"/"+appId;
         Metadata metadata = getMetadata(folder);
-        for(int i=metadata.lastProcessedMessageId+1;i <= metadata.lastReceivedMessageId;i++){
+        for(long i=metadata.lastProcessedMessageId+1;i <= metadata.lastReceivedMessageId;i++){
             appDataList.add(readFile(folder+"/"+i+".txt"));
         }
         //metadata.lastProcessedMessageId= metadata.lastReceivedMessageId;
         //setMetadata(folder, metadata);
         return appDataList;
+    }
+
+    public byte[] getADU(String appId, String aduId){
+        return readFile(RootFolder+"/"+ appId+"/"+aduId+".txt");
+    }
+
+    public File getADUFile(String appId, String aduId){
+        return new File(RootFolder+"/"+ appId+"/"+aduId+".txt");
     }
 
     public byte[] getNextAppData(String folder){
@@ -96,7 +118,7 @@ public class FileStoreHelper {
             metadata = new Metadata(1, 0,0,0);
             setMetadata(folder, metadata);
         }
-        int nextMessageId = metadata.lastProcessedMessageId+1;
+        long nextMessageId = metadata.lastProcessedMessageId+1;
         if(nextMessageId> metadata.lastReceivedMessageId){
             Log.d("deepak","no data to show");
             if(nextMessageId>1){
@@ -154,5 +176,26 @@ public class FileStoreHelper {
             }
 
         }
+    }
+
+    public void deleteAllFilesUpTo(String appId, long aduId){
+        //check if there are enough files
+        String folder = RootFolder+"/"+appId;
+        Metadata metadata = getMetadata(folder);
+        if(metadata.lastSentMessageId >= aduId){
+            System.out.println("[FileStoreHelper.deleteAllFilesUpTo] Data already deleted.");
+            return;
+        }
+        for(long i = metadata.lastSentMessageId+1 ; i<=aduId;i++){
+            deleteFile(i+".txt");
+            System.out.println(i+".txt deleted");
+        }
+
+        metadata.lastSentMessageId = aduId;
+    }
+
+    public void deleteFile(String fileName){
+        File file = new File(RootFolder+"/"+fileName);
+        file.delete();
     }
 }

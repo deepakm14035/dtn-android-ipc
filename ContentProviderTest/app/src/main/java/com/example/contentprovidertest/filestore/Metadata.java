@@ -2,18 +2,18 @@ package com.example.contentprovidertest.filestore;
 
 public class Metadata {
     //last messageId added by the app
-    public int lastAddedMessageId;
+    public long lastAddedMessageId;
 
     //last messageId sent successfully via DTN
-    public int lastSentMessageId;
+    public long lastSentMessageId;
 
     //last messageId received via DTN
-    public int lastReceivedMessageId;
+    public long lastReceivedMessageId;
 
     //latest messageId processed by the application
-    public int lastProcessedMessageId;
+    public long lastProcessedMessageId;
 
-    public Metadata(int lastAddedMessageId, int lastSentMessageId, int lastReceivedMessageId, int lastProcessedMessageId){
+    public Metadata(long lastAddedMessageId, long lastSentMessageId, long lastReceivedMessageId, long lastProcessedMessageId){
         this.lastAddedMessageId = lastAddedMessageId;
         this.lastSentMessageId = lastSentMessageId;
         this.lastReceivedMessageId = lastReceivedMessageId;

@@ -141,7 +141,8 @@ public class MessageProvider extends ContentProvider {
         // Used to match uris with Content Providers
         switch (uriMatcher.match(uri)) {
             case uriCode:
-                rowsDeleted = sqlDB.delete(TABLE_NAME, selection, selectionArgs);
+                //rowsDeleted = sqlDB.delete(TABLE_NAME, selection, selectionArgs);
+
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri);
