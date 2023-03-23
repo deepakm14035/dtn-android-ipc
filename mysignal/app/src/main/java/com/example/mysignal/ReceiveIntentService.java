@@ -37,7 +37,7 @@ public class ReceiveIntentService extends IntentService {
         if (intent != null) {
             final String action = intent.getAction();
             if (ACTION_RECV.equals(action)) {
-                final String data = intent.getStringExtra(Intent.EXTRA_TEXT);
+                final String data = new String(intent.getByteArrayExtra(Intent.EXTRA_TEXT));
                 saveData(data);
             }
         }
