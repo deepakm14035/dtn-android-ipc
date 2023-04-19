@@ -65,8 +65,8 @@ public class MessageProvider extends ContentProvider {
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         MatrixCursor cursor = null;
         try {
-            Log.d("deepak", "selection-" + selection);
-            Log.d("deepak", "selectionArgs-" + selectionArgs[0]);
+            //Log.d("deepak", "selection-" + selection);
+            //Log.d("deepak", "selectionArgs-" + selectionArgs[0]);
             //selection = app name
             //selectionsArgs[0] = app name value
             byte[] res = sendFileStoreHelper.getNextAppData(selectionArgs[0]);
@@ -117,14 +117,6 @@ public class MessageProvider extends ContentProvider {
         byte[] data = (byte[]) contentValues.get("data");
         sendFileStoreHelper.AddFile(appName, data);
 
-        //notify app that someone sent data for the app
-        if(destination.equals("APP")) {
-            Intent intent = new Intent("android.intent.dtn.SEND_DATA");
-            intent.setPackage(appName);
-            intent.setType("text/plain");
-            intent.putExtra(Intent.EXTRA_TEXT, data);
-            getContext().startService(intent);
-        }
 
         /*long rowID = sqlDB.insert(TABLE_NAME, null, contentValues);
         if(rowID>0){

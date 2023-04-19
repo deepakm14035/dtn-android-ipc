@@ -34,11 +34,17 @@
         android:hint="app name"
         android:layout_below="@+id/message"></EditText>
     <Button
+        android:id="@+id/btn_file_select"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select File"
+        android:layout_below="@id/message"></Button>
+    <Button
         android:id="@+id/btn_insert"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Send"
-        android:layout_below="@id/app_name"></Button>
+        android:layout_below="@id/btn_file_select"></Button>
     <Button
         android:id="@+id/btn_view_messages"
         android:layout_width="match_parent"
@@ -46,27 +52,9 @@
         android:text="View Messages"
         android:layout_below="@id/btn_insert"></Button>
     <Button
-        android:id="@+id/btn_update_status"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Update Status"
-        android:layout_below="@id/btn_view_messages"></Button>
-    <Button
         android:id="@+id/btn_delete"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Delete Message"
-        android:layout_below="@id/btn_update_status"></Button>
-    <Button
-        android:id="@+id/btn_start_service"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="start service"
-        android:layout_below="@id/btn_delete"></Button>
-    <Button
-        android:id="@+id/btn_stop_service"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="stop service"
-        android:layout_below="@id/btn_start_service"></Button>
+        android:layout_below="@id/btn_view_messages"></Button>
 </RelativeLayout>

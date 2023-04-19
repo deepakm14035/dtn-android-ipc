@@ -41,13 +41,13 @@ public class MainActivity extends AppCompatActivity {
         receiver=findViewById(R.id.receiver);
         messageText=findViewById(R.id.message);
         appName=findViewById(R.id.app_name);
-        aduId=findViewById(R.id.adu_id);
+        //aduId=findViewById(R.id.adu_id);
 
         insert=findViewById(R.id.btn_insert);
         view=findViewById(R.id.btn_view_messages);
         update=findViewById(R.id.btn_update_status);
         delete=findViewById(R.id.btn_delete);
-        sendToSocket=findViewById(R.id.btn_add_to_socket);
+        //sendToSocket=findViewById(R.id.btn_add_to_socket);
         DB=new DBHelper(this);
         insert.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -179,12 +179,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        sendToSocket.setOnClickListener(new View.OnClickListener() {
+        /*sendToSocket.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 new Thread1().execute("");
             }
-        });
+        });*/
     }
 
     private void showAlertMessage(String title, String message){
